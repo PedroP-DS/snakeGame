@@ -38,11 +38,26 @@ window.onload = function() {
 var len = 4;
 var snake = [];
 
-for(var i = len -1; i >=0; i--) {
+for(var i = len-1; i >=0; i--) {
     snake.push(
-        {x:i,
-        y:0}
+                {x:i,
+                y:0
+            }
     );
+}
+
+//comida
+food = {
+    x : Math.round(Math.random()*(cvsW/snakeW-1)+1),
+    y : Math.round(Math.random()*(cvsW/snakeH-1)+1)
+}
+
+function drawFood(x,y){
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(x*snakeW,y*snakeH,snakeW,snakeH);
+
+        ctx.fillStyle = "#000";
+        ctx.strokeRect(x*snakeW,y*snakeH,snakeW,snakeH);
 }
 
 function draw(){
@@ -53,22 +68,42 @@ function draw(){
         drawSnake(x,y);
     }
 
+    drawFood(food.x,food.y);
+
     //Cabeça da cobra
     var snakeX = snake[0].x;
     var snakeY = snake[0].y;
+
+    //Se atingir a parede.
+    if (snakeX < 0 || snakeY < 0 || snakeX >= cvsW/snakeW || snakeY >= cvsH/snakeH){
+        location.reload();
+    }
 
     //Remove o ultimo do array(rabo da cobra)
     snake.pop();
 
     if(direction == "left") snakeX--;
-    else  if(direction == "up") snaleY--;
+    else  if(direction == "up") snakeY--;
     else  if(direction == "right") snakeX++;
     else  if(direction == "down") snakeY++;
 
-    var newHead = {
-        x : snakeX,
-        y : snakeY
-    };
+    //Se a cobra comer a comida
+    if (snakeX == food.x && snakeY == food.y){
+        food = {
+            x : Math.round(Math.random()*(cvsW/snakeW-1)+1),
+            y : Math.round(Math.random()*(cvsW/snakeH-1)+1)
+        }
+        var newHead = {
+                        x : snakeX,
+                        y : snakeY
+                    };
+    }else{
+        snake.pop();
+        var newHead = {
+                        x : snakeX,
+                        y : snakeY
+                    };
+    }
 
     snake.unshift(newHead);
 }
