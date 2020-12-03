@@ -8,10 +8,16 @@ window.onload = function() {
     var snakeW = 10;
     var snakeH = 10;
 
+    //var Placar
+    var score = 4;
+
+    //
+
     var direction = "right";
 
     //Lendo a entrada de comandos
     document.addEventListener("keydown",getDirection);
+
     function getDirection(e){
         if(e.keyCode == 37 && direction != "right") {
             direction = "left";
@@ -35,16 +41,16 @@ window.onload = function() {
 
 
 
-var len = 4;
-var snake = [];
+    var len = 4;
+    var snake = [];
 
-for(var i = len-1; i >=0; i--) {
-    snake.push(
-                {x:i,
-                y:0
-            }
-    );
-}
+    for(var i = len-1; i >=0; i--) {
+        snake.push(
+                    {x:i,
+                    y:0
+                }
+        );
+    }
 
 //comida
 food = {
@@ -53,11 +59,26 @@ food = {
 }
 
 function drawFood(x,y){
-        ctx.fillStyle = "yellow";
+        ctx.fillStyle = "#f00";
         ctx.fillRect(x*snakeW,y*snakeH,snakeW,snakeH);
 
         ctx.fillStyle = "#000";
         ctx.strokeRect(x*snakeW,y*snakeH,snakeW,snakeH);
+}
+
+function checkCollision(x,y,array){
+    for(var i = 0; i<array.length; i++){
+        if(x == array[i].x && y == array[i].y){
+            return true;
+        }
+    }
+    return false;
+}
+
+function drawScore(x){
+    ctx.fillStyle = "#f00";
+    ctx.font = "15px verdana";
+    ctx.fillText("score : "+x, 5, cvsH-5);
 }
 
 function draw(){
@@ -74,18 +95,16 @@ function draw(){
     var snakeX = snake[0].x;
     var snakeY = snake[0].y;
 
-    //Se atingir a parede.
-    if (snakeX < 0 || snakeY < 0 || snakeX >= cvsW/snakeW || snakeY >= cvsH/snakeH){
-        location.reload();
-    }
-
-    //Remove o ultimo do array(rabo da cobra)
-    snake.pop();
-
     if(direction == "left") snakeX--;
     else  if(direction == "up") snakeY--;
     else  if(direction == "right") snakeX++;
     else  if(direction == "down") snakeY++;
+
+    //Se atingir a parede.
+    if (snakeX < 0 || snakeY < 0 || snakeX >= cvsW/snakeW || snakeY >= cvsH/snakeH || 
+        checkCollision(snakeX,snakeY,snake)){
+        location.reload();
+    }
 
     //Se a cobra comer a comida
     if (snakeX == food.x && snakeY == food.y){
@@ -97,6 +116,7 @@ function draw(){
                         x : snakeX,
                         y : snakeY
                     };
+                score++;
     }else{
         snake.pop();
         var newHead = {
@@ -106,6 +126,7 @@ function draw(){
     }
 
     snake.unshift(newHead);
+    drawScore(score)
 }
 
 setInterval(draw,60);
